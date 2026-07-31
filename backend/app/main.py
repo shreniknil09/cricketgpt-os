@@ -1,20 +1,22 @@
 from fastapi import FastAPI
 
+from app.api.team_routes import router as team_router
+from app.api.player_routes import router as player_router
+from app.api.auth_routes import router as auth_router
+
 app = FastAPI(
     title="CricketGPT OS",
-    version="1.0.0",
-    description="AI-powered Cricket Analytics Platform"
+    version="1.0.0"
 )
+
+# Register all routes
+app.include_router(team_router)
+app.include_router(player_router)
+app.include_router(auth_router)
+
 
 @app.get("/")
 def root():
     return {
-        "message": "Welcome to CricketGPT OS 🚀"
-    }
-
-@app.get("/health")
-def health():
-    return {
-        "status": "healthy",
-        "project": "CricketGPT OS"
+        "message": "Welcome to CricketGPT OS"
     }
