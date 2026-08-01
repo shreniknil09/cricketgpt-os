@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.auth.hashing import hash_password
+from app.auth.hashing import hash_password, verify_password
 from app.models.user import User
 from app.repositories.user_repository import (
     create_user,
@@ -23,3 +23,15 @@ def register_user(db: Session, user):
     )
 
     return create_user(db, new_user)
+
+
+def login_user(db: Session, username: str, password: str):
+    user = get_user_by_username(db, username)
+
+    if user is None:
+        raise Exception("Invalid username or password")
+
+    if not verify_password(password, user.hashed_password):
+        raise Exception("Invalid username or password")
+
+    return user

@@ -1,9 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.auth.jwt_handler import create_access_token
 from app.database.session import get_db
-from app.schemas.user import UserCreate, UserResponse
-from app.services.user_service import register_user
+from app.schemas.user import (
+    UserCreate,
+    UserLogin,
+    UserResponse,
+)
+from app.services.user_service import (
+    login_user,
+    register_user,
+)
 
 router = APIRouter(
     prefix="/auth",
@@ -18,5 +26,32 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(
             status_code=400,
+            detail=str(e)
+        )
+
+
+@router.post("/login")
+def login(user: UserLogin, db: Session = Depends(get_db)):
+    try:
+        logged_in_user = login_user(
+            db,
+            user.username,
+            user.password,
+        )
+
+        access_token = create_access_token(
+            data={
+                "sub": logged_in_user.username
+            }
+        )
+
+        return {
+            "access_token": access_token,
+            "token_type": "bearer"
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=401,
             detail=str(e)
         )
