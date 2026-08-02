@@ -6,6 +6,7 @@ from app.api.auth_routes import router as auth_router
 from app.api.venue_routes import router as venue_router
 from app.api.tournament_routes import router as tournament_router
 from app.api.match_routes import router as match_router
+from app.api.playing_xi_routes import router as playing_xi_router
 
 app = FastAPI(
     title="CricketGPT OS",
@@ -19,8 +20,9 @@ app.include_router(auth_router)
 app.include_router(venue_router)
 app.include_router(tournament_router)
 app.include_router(match_router)
+app.include_router(playing_xi_router)
 
-@app.get("/")
+@app.get("/") 
 def root():
     return {
         "message": "Welcome to CricketGPT OS"

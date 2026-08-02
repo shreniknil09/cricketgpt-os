@@ -13,6 +13,7 @@ from app.models.player import Player
 from app.models.venue import Venue
 from app.models.tournament import Tournament
 from app.models.match import Match
+from app.models.playing_xi import PlayingXI
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
