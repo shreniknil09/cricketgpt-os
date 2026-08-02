@@ -5,6 +5,7 @@ from app.models.team import Team
 from app.models.player import Player
 from app.models.venue import Venue
 from app.models.user import User
+from app.models.tournament import Tournament
 
 Base.metadata.create_all(bind=engine)
 
