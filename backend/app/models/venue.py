@@ -1,4 +1,4 @@
-from sqlalchemy import String
+from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -7,10 +7,29 @@ from app.database.base import Base
 class Venue(Base):
     __tablename__ = "venues"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
 
-    stadium_name: Mapped[str] = mapped_column(String(150), nullable=False)
+    name: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False,
+        unique=True
+    )
 
-    city: Mapped[str] = mapped_column(String(100), nullable=False)
+    city: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False
+    )
 
-    country: Mapped[str] = mapped_column(String(100), nullable=False)
+    country: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False
+    )
+
+    capacity: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False
+    )
