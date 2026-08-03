@@ -1,4 +1,5 @@
 from app.models.team import Team
+from app.models.player import Player
 
 
 def seed_teams(db):

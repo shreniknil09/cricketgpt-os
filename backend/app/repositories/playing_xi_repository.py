@@ -30,6 +30,21 @@ def count_players_in_team(
     )
 
 
+def player_exists_in_match(
+    db: Session,
+    match_id: int,
+    player_id: int,
+):
+    return (
+        db.query(PlayingXI)
+        .filter(
+            PlayingXI.match_id == match_id,
+            PlayingXI.player_id == player_id,
+        )
+        .first()
+    )
+
+
 def create_playing_xi(db: Session, player):
     new_player = PlayingXI(
         match_id=player.match_id,
