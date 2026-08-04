@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from app.models.player import Player
 from app.models.playing_xi import PlayingXI
 
 
@@ -15,11 +16,7 @@ def get_playing_xi_by_id(db: Session, playing_xi_id: int):
     )
 
 
-def count_players_in_team(
-    db: Session,
-    match_id: int,
-    team_id: int,
-):
+def count_players_in_team(db: Session, match_id: int, team_id: int):
     return (
         db.query(PlayingXI)
         .filter(
@@ -30,16 +27,69 @@ def count_players_in_team(
     )
 
 
-def player_exists_in_match(
-    db: Session,
-    match_id: int,
-    player_id: int,
-):
+def player_exists_in_match(db: Session, match_id: int, player_id: int):
     return (
         db.query(PlayingXI)
         .filter(
             PlayingXI.match_id == match_id,
             PlayingXI.player_id == player_id,
+        )
+        .first()
+    )
+
+
+def captain_exists(db: Session, match_id: int, team_id: int):
+    return (
+        db.query(PlayingXI)
+        .filter(
+            PlayingXI.match_id == match_id,
+            PlayingXI.team_id == team_id,
+            PlayingXI.is_captain == True,
+        )
+        .first()
+    )
+
+
+def wicketkeeper_exists(db: Session, match_id: int, team_id: int):
+    return (
+        db.query(PlayingXI)
+        .filter(
+            PlayingXI.match_id == match_id,
+            PlayingXI.team_id == team_id,
+            PlayingXI.is_wicketkeeper == True,
+        )
+        .first()
+    )
+
+
+def batting_position_exists(
+    db: Session,
+    match_id: int,
+    team_id: int,
+    batting_position: int,
+):
+    return (
+        db.query(PlayingXI)
+        .filter(
+            PlayingXI.match_id == match_id,
+            PlayingXI.team_id == team_id,
+            PlayingXI.batting_position == batting_position,
+        )
+        .first()
+    )
+
+
+# NEW FUNCTION
+def player_belongs_to_team(
+    db: Session,
+    player_id: int,
+    team_id: int,
+):
+    return (
+        db.query(Player)
+        .filter(
+            Player.id == player_id,
+            Player.team_id == team_id,
         )
         .first()
     )
