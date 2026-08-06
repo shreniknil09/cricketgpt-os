@@ -40,6 +40,29 @@ class Innings(Base):
         nullable=False,
     )
 
+    # -------------------------
+    # Current Match State
+    # -------------------------
+
+    current_striker_id: Mapped[int | None] = mapped_column(
+        ForeignKey("players.id"),
+        nullable=True,
+    )
+
+    current_non_striker_id: Mapped[int | None] = mapped_column(
+        ForeignKey("players.id"),
+        nullable=True,
+    )
+
+    current_bowler_id: Mapped[int | None] = mapped_column(
+        ForeignKey("players.id"),
+        nullable=True,
+    )
+
+    # -------------------------
+    # Score
+    # -------------------------
+
     runs: Mapped[int] = mapped_column(
         Integer,
         default=0,

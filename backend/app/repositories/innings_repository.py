@@ -38,6 +38,16 @@ def create_innings(
         innings_number=innings.innings_number,
         batting_team_id=innings.batting_team_id,
         bowling_team_id=innings.bowling_team_id,
+
+        current_striker_id=innings.current_striker_id,
+        current_non_striker_id=innings.current_non_striker_id,
+        current_bowler_id=innings.current_bowler_id,
+
+        runs=0,
+        wickets=0,
+        overs=0,
+        balls=0,
+        status="Not Started",
     )
 
     db.add(new_innings)

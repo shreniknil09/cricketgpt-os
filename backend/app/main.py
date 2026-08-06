@@ -17,13 +17,22 @@ from app.api.player_match_stats_routes import (
 from app.api.bowler_match_stats_routes import (
     router as bowler_match_stats_router,
 )
+from app.api.live_score_routes import (
+    router as live_score_router,
+)
+from app.api.scorecard_routes import (
+    router as scorecard_router,
+)
 
 app = FastAPI(
     title="CricketGPT OS",
     version="1.0.0",
 )
 
-# Register all routes
+# ---------------------------------------
+# Register All API Routes
+# ---------------------------------------
+
 app.include_router(auth_router)
 app.include_router(team_router)
 app.include_router(player_router)
@@ -37,10 +46,13 @@ app.include_router(over_router)
 app.include_router(ball_router)
 app.include_router(player_match_stats_router)
 app.include_router(bowler_match_stats_router)
-
+app.include_router(live_score_router)
+app.include_router(scorecard_router)    
 
 @app.get("/")
 def root():
     return {
-        "message": "Welcome to CricketGPT OS"
+        "message": "Welcome to CricketGPT OS",
+        "version": "1.0.0",
+        "docs": "/docs",
     }

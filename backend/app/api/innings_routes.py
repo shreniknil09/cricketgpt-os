@@ -2,10 +2,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
+
 from app.schemas.innings_schema import (
     InningsCreate,
     InningsResponse,
 )
+
 from app.services.innings_service import (
     add_innings,
     get_innings,
@@ -46,7 +48,7 @@ def read_single_innings(
     "/",
     response_model=InningsResponse,
 )
-def create_new_innings(
+def create_innings(
     innings: InningsCreate,
     db: Session = Depends(get_db),
 ):
