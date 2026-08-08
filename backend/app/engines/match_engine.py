@@ -10,6 +10,7 @@ from app.engines.extras_engine import process_extras
 from app.engines.over_engine import process_over
 from app.engines.wicket_engine import process_wicket
 from app.engines.innings_engine import process_innings
+from app.engines.result_engine import process_result
 
 
 def process_ball(
@@ -27,6 +28,7 @@ def process_ball(
     # ---------------------------------
     # Update Team Score
     # ---------------------------------
+
     update_score(
         db,
         ball,
@@ -35,6 +37,7 @@ def process_ball(
     # ---------------------------------
     # Update Batter Statistics
     # ---------------------------------
+
     update_batting_stats(
         db,
         ball,
@@ -43,6 +46,7 @@ def process_ball(
     # ---------------------------------
     # Update Bowler Statistics
     # ---------------------------------
+
     update_bowler_stats(
         db,
         ball,
@@ -51,6 +55,7 @@ def process_ball(
     # ---------------------------------
     # Rotate Strike
     # ---------------------------------
+
     rotate_strike(
         db,
         ball,
@@ -59,15 +64,8 @@ def process_ball(
     # ---------------------------------
     # Process Extras
     # ---------------------------------
-    process_extras(
-        db,
-        ball,
-    )
 
-    # ---------------------------------
-    # Process Over Completion
-    # ---------------------------------
-    process_over(
+    process_extras(
         db,
         ball,
     )
@@ -75,7 +73,17 @@ def process_ball(
     # ---------------------------------
     # Process Wicket
     # ---------------------------------
+
     process_wicket(
+        db,
+        ball,
+    )
+
+    # ---------------------------------
+    # Process Over Completion
+    # ---------------------------------
+
+    process_over(
         db,
         ball,
     )
@@ -83,12 +91,17 @@ def process_ball(
     # ---------------------------------
     # Process Innings Completion
     # ---------------------------------
+
     process_innings(
         db,
         ball,
     )
 
     # ---------------------------------
-    # Coming Next
+    # Process Match Result
     # ---------------------------------
-    # process_result(db, ball)
+
+    process_result(
+        db,
+        ball.over_id,
+    )
