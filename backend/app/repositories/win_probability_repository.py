@@ -1,0 +1,39 @@
+from sqlalchemy.orm import Session
+
+from app.models.innings import Innings
+
+
+def get_current_innings(
+    db: Session,
+    match_id: int,
+):
+    """
+    Get the currently active innings for a match.
+    """
+
+    return (
+        db.query(Innings)
+        .filter(
+            Innings.match_id == match_id,
+            Innings.innings_number == 2,
+        )
+        .first()
+    )
+
+
+def get_first_innings(
+    db: Session,
+    match_id: int,
+):
+    """
+    Get the first innings of a match.
+    """
+
+    return (
+        db.query(Innings)
+        .filter(
+            Innings.match_id == match_id,
+            Innings.innings_number == 1,
+        )
+        .first()
+    )

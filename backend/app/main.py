@@ -41,6 +41,30 @@ from app.api.leaderboard_routes import (
 from app.api.team_stats_routes import (
     router as team_stats_router,
 )
+from app.api.player_of_match_routes import (
+    router as player_of_match_router,
+)
+from app.api.partnership_routes import (
+    router as partnership_router,
+)
+from app.api.fall_of_wickets_routes import (
+    router as fall_of_wickets_router,
+)
+from app.api.player_impact_routes import (
+    router as player_impact_router,
+)
+from app.api.win_probability_routes import (
+    router as win_probability_router,
+)
+from app.api.match_situation_routes import (
+    router as match_situation_router,
+)
+from app.api.momentum_routes import (
+    router as momentum_router,
+)
+from app.api.match_prediction_routes import (
+    router as match_prediction_router,
+)
 
 app = FastAPI(
     title="CricketGPT OS",
@@ -72,6 +96,14 @@ app.include_router(points_table_router)
 app.include_router(player_career_router)
 app.include_router(leaderboard_router)
 app.include_router(team_stats_router)
+app.include_router(player_of_match_router)
+app.include_router(partnership_router)  
+app.include_router(fall_of_wickets_router)
+app.include_router(player_impact_router)  
+app.include_router(win_probability_router)  
+app.include_router(match_situation_router)  
+app.include_router(momentum_router) 
+app.include_router(match_prediction_router) 
 
 @app.get("/")
 def root():

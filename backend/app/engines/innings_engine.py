@@ -14,36 +14,87 @@ def process_innings(
     ball: Ball,
 ):
     """
-    Check whether the innings should end.
+    Check whether the current innings should end.
     """
 
-    # Find the over
+    # ---------------------------------
+    # Find Over
+    # ---------------------------------
+
     over = (
         db.query(Over)
-        .filter(Over.id == ball.over_id)
+        .filter(
+            Over.id == ball.over_id,
+        )
         .first()
     )
 
     if over is None:
         return
 
-    # Find innings
+    # ---------------------------------
+    # Find Current Innings
+    # ---------------------------------
+
     innings = (
         db.query(Innings)
-        .filter(Innings.id == over.innings_id)
+        .filter(
+            Innings.id == over.innings_id,
+        )
         .first()
     )
 
     if innings is None:
         return
 
-    # End innings if wickets reached
+    # ---------------------------------
+    # Start Innings
+    # ---------------------------------
+
+    if innings.status == "Not Started":
+        innings.status = "In Progress"
+
+    # ---------------------------------
+    # Rule 1: All Wickets Lost
+    # ---------------------------------
+
     if innings.wickets >= MAX_WICKETS:
+
         innings.status = "Completed"
 
-    # End innings if overs completed
+    # ---------------------------------
+    # Rule 2: Maximum Overs Completed
+    # ---------------------------------
+
     elif innings.overs >= MAX_OVERS:
+
         innings.status = "Completed"
+
+    # ---------------------------------
+    # Rule 3: Chasing Team Reaches Target
+    # ---------------------------------
+
+    elif innings.innings_number == 2:
+
+        first_innings = (
+            db.query(Innings)
+            .filter(
+                Innings.match_id == innings.match_id,
+                Innings.innings_number == 1,
+            )
+            .first()
+        )
+
+        if first_innings is not None:
+
+            target = first_innings.runs + 1
+
+            if innings.runs >= target:
+                innings.status = "Completed"
+
+    # ---------------------------------
+    # Save Changes
+    # ---------------------------------
 
     db.commit()
     db.refresh(innings)

@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 from app.models.match import Match
 from app.models.innings import Innings
 
+from app.engines.player_of_match_engine import (
+    calculate_player_of_match,
+)
+
 
 def process_result(
     db: Session,
@@ -82,6 +86,7 @@ def process_result(
         )
 
     else:
+
         # Match is tied
         match.winner_id = None
 
@@ -92,6 +97,19 @@ def process_result(
     match.status = "Completed"
 
     db.commit()
+
+    # ---------------------------------
+    # Calculate Player of the Match
+    # ---------------------------------
+
+    player_of_match = calculate_player_of_match(
+        db,
+        match_id,
+    )
+
     db.refresh(match)
 
-    return match
+    return {
+        "match": match,
+        "player_of_match": player_of_match,
+    }
