@@ -95,6 +95,23 @@ from app.api.score_prediction_routes import (
 from app.api.player_performance_routes import (
     router as player_performance_router,
 )
+from app.api.run_rate_routes import (
+    router as run_rate_router,
+)
+from app.api.batting_phase_routes import router as batting_phase_router
+from app.api.bowling_phase_routes import router as bowling_phase_router
+from app.api.powerplay_routes import router as powerplay_router
+from app.api.middle_overs_routes import router as middle_overs_router
+from app.api.death_overs_routes import router as death_overs_router
+from app.api.boundary_routes import router as boundary_router
+from app.api.dot_ball_routes import router as dot_ball_router
+from app.api.partnership_v2_routes import router as partnership_v2_router
+from app.api.bowling_spell_routes import router as bowling_spell_router
+from app.api.required_run_rate_routes import router as required_run_rate_router
+from app.api.chase_difficulty_routes import router as chase_difficulty_router
+from app.api.pressure_index_routes import router as pressure_index_router
+from app.api.momentum_v2_routes import router as momentum_v2_router
+from app.api.match_impact_v2_routes import router as match_impact_v2_router
 
 
 app = FastAPI(
@@ -145,6 +162,21 @@ app.include_router(ml_prediction_router)
 app.include_router(ml_prediction_v2_router)  
 app.include_router(score_prediction_router) 
 app.include_router(player_performance_router)   
+app.include_router(run_rate_router) 
+app.include_router(batting_phase_router)    
+app.include_router(bowling_phase_router)
+app.include_router(powerplay_router)
+app.include_router(middle_overs_router)
+app.include_router(death_overs_router)
+app.include_router(boundary_router)
+app.include_router(dot_ball_router)
+app.include_router(partnership_v2_router)
+app.include_router(bowling_spell_router)
+app.include_router(required_run_rate_router)
+app.include_router(chase_difficulty_router)
+app.include_router(pressure_index_router)
+app.include_router(momentum_v2_router)
+app.include_router(match_impact_v2_router)
 
 @app.get("/")
 def root():
