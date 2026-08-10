@@ -43,7 +43,7 @@ def parse_match(file_path: Path) -> dict:
             else None
         ),
 
-        "date": (
+        "match_date": (
             str(dates[0])
             if dates
             else None
@@ -97,11 +97,17 @@ def parse_all_matches(
     for file_path in json_files:
 
         try:
+
             match = parse_match(
                 file_path
             )
 
-            matches.append(match)
+            if (
+                match["team1"]
+                and match["team2"]
+                and match["winner"]
+            ):
+                matches.append(match)
 
         except Exception as error:
 
@@ -109,6 +115,13 @@ def parse_all_matches(
                 f"Skipping {file_path.name}: "
                 f"{error}"
             )
+
+    matches.sort(
+        key=lambda match: (
+            match["match_date"] or "",
+            match["match_id"],
+        )
+    )
 
     return matches
 
@@ -127,23 +140,34 @@ if __name__ == "__main__":
         first = matches[0]
 
         print("\nFirst match")
+
         print(
             f"ID: {first['match_id']}"
         )
+
         print(
             f"Teams: {first['team1']} "
             f"vs {first['team2']}"
         )
+
         print(
-            f"Date: {first['date']}"
+            f"Date: {first['match_date']}"
         )
+
         print(
             f"Venue: {first['venue']}"
         )
+
+        print(
+            f"Toss winner: "
+            f"{first['toss_winner']}"
+        )
+
+        print(
+            f"Toss decision: "
+            f"{first['toss_decision']}"
+        )
+
         print(
             f"Winner: {first['winner']}"
-        )
-        print(
-            f"Innings: "
-            f"{len(first['innings'])}"
         )
