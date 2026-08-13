@@ -2,6 +2,10 @@ import json
 from pathlib import Path
 
 
+# ============================================================
+# Raw Cricsheet Data
+# ============================================================
+
 RAW_DATA_DIR = (
     Path(__file__).resolve().parent.parent
     / "data"
@@ -10,17 +14,31 @@ RAW_DATA_DIR = (
 )
 
 
+# ============================================================
+# Load Match
+# ============================================================
+
 def load_match(file_path: Path) -> dict:
+
     with file_path.open(
         "r",
         encoding="utf-8",
     ) as file:
+
         return json.load(file)
 
 
-def calculate_innings_features(innings: dict) -> dict:
+# ============================================================
+# Innings Features
+# ============================================================
+
+def calculate_innings_features(
+    innings: dict,
+) -> dict:
+
     """
-    Calculate basic batting features from one innings.
+    Calculate basic batting features
+    from one innings.
     """
 
     total_runs = 0
@@ -59,12 +77,16 @@ def calculate_innings_features(innings: dict) -> dict:
             )
 
             total_runs += (
-                batter_runs + extras
+                batter_runs
+                + extras
             )
 
             total_balls += 1
 
-            if batter_runs in (4, 6):
+            if batter_runs in (
+                4,
+                6,
+            ):
                 boundaries += 1
 
             if (
@@ -76,6 +98,7 @@ def calculate_innings_features(innings: dict) -> dict:
             if delivery.get(
                 "wickets"
             ):
+
                 wickets += len(
                     delivery["wickets"]
                 )
@@ -102,25 +125,45 @@ def calculate_innings_features(innings: dict) -> dict:
     )
 
     return {
-        "runs": total_runs,
-        "balls": total_balls,
-        "wickets": wickets,
-        "boundaries": boundaries,
-        "dot_balls": dot_balls,
-        "run_rate": round(
-            run_rate,
-            4,
-        ),
-        "boundary_rate": round(
-            boundary_rate,
-            4,
-        ),
-        "dot_ball_rate": round(
-            dot_ball_rate,
-            4,
-        ),
+
+        "runs":
+            total_runs,
+
+        "balls":
+            total_balls,
+
+        "wickets":
+            wickets,
+
+        "boundaries":
+            boundaries,
+
+        "dot_balls":
+            dot_balls,
+
+        "run_rate":
+            round(
+                run_rate,
+                4,
+            ),
+
+        "boundary_rate":
+            round(
+                boundary_rate,
+                4,
+            ),
+
+        "dot_ball_rate":
+            round(
+                dot_ball_rate,
+                4,
+            ),
     }
 
+
+# ============================================================
+# Match Features
+# ============================================================
 
 def calculate_match_features(
     data: dict,
@@ -182,13 +225,18 @@ def calculate_match_features(
     )
 
     return {
-        "innings": innings_features,
 
-        "total_runs": total_runs,
+        "innings":
+            innings_features,
 
-        "total_wickets": total_wickets,
+        "total_runs":
+            total_runs,
 
-        "total_balls": total_balls,
+        "total_wickets":
+            total_wickets,
+
+        "total_balls":
+            total_balls,
 
         "total_boundaries":
             total_boundaries,
@@ -204,6 +252,10 @@ def calculate_match_features(
     }
 
 
+# ============================================================
+# Extract All Match Features
+# ============================================================
+
 def extract_all_match_features(
     raw_directory: Path = RAW_DATA_DIR,
 ):
@@ -213,6 +265,7 @@ def extract_all_match_features(
     )
 
     if not json_files:
+
         raise FileNotFoundError(
             "No Cricsheet JSON files found."
         )
@@ -227,11 +280,19 @@ def extract_all_match_features(
                 file_path
             )
 
+            # ------------------------------------------------
+            # Existing ball-by-ball features
+            # ------------------------------------------------
+
             match_features = (
                 calculate_match_features(
                     data
                 )
             )
+
+            # ------------------------------------------------
+            # Match metadata
+            # ------------------------------------------------
 
             info = data.get(
                 "info",
@@ -248,8 +309,55 @@ def extract_all_match_features(
                 []
             )
 
+            # ------------------------------------------------
+            # Match date
+            # ------------------------------------------------
+
+            dates = info.get(
+                "dates",
+                []
+            )
+
+            match_date = None
+
+            if dates:
+
+                match_date = (
+                    dates[0]
+                )
+
+            # ------------------------------------------------
+            # Venue
+            # ------------------------------------------------
+
+            venue = info.get(
+                "venue"
+            )
+
+            # ------------------------------------------------
+            # Toss
+            # ------------------------------------------------
+
+            toss = info.get(
+                "toss",
+                {}
+            )
+
+            toss_winner = toss.get(
+                "winner"
+            )
+
+            toss_decision = toss.get(
+                "decision"
+            )
+
+            # ------------------------------------------------
+            # Add metadata
+            # ------------------------------------------------
+
             match_features.update(
                 {
+
                     "match_id":
                         file_path.stem,
 
@@ -267,6 +375,18 @@ def extract_all_match_features(
                         outcome.get(
                             "winner"
                         ),
+
+                    "match_date":
+                        match_date,
+
+                    "venue":
+                        venue,
+
+                    "toss_winner":
+                        toss_winner,
+
+                    "toss_decision":
+                        toss_decision,
                 }
             )
 
@@ -284,6 +404,10 @@ def extract_all_match_features(
 
     return results
 
+
+# ============================================================
+# Test Parser
+# ============================================================
 
 if __name__ == "__main__":
 
@@ -305,6 +429,11 @@ if __name__ == "__main__":
         )
 
         print(
+            f"Match ID: "
+            f"{first['match_id']}"
+        )
+
+        print(
             f"Teams: "
             f"{first['team1']} vs "
             f"{first['team2']}"
@@ -313,6 +442,26 @@ if __name__ == "__main__":
         print(
             f"Winner: "
             f"{first['winner']}"
+        )
+
+        print(
+            f"Date: "
+            f"{first['match_date']}"
+        )
+
+        print(
+            f"Venue: "
+            f"{first['venue']}"
+        )
+
+        print(
+            f"Toss Winner: "
+            f"{first['toss_winner']}"
+        )
+
+        print(
+            f"Toss Decision: "
+            f"{first['toss_decision']}"
         )
 
         print(

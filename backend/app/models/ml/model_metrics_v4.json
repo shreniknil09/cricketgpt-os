@@ -1,0 +1,41 @@
+{
+    "model": "RandomForestClassifier-V4",
+    "dataset_rows": 1218,
+    "training_rows": 974,
+    "test_rows": 244,
+    "training_start": "2008-04-18",
+    "training_end": "2023-04-30",
+    "testing_start": "2023-05-01",
+    "testing_end": "2026-05-31",
+    "feature_count": 12,
+    "features": [
+        "elo_difference",
+        "form_5_difference",
+        "form_10_difference",
+        "win_rate_difference",
+        "run_rate_difference",
+        "boundary_rate_difference",
+        "bowling_run_rate_difference",
+        "wickets_difference",
+        "wickets_per_ball_difference",
+        "head_to_head_difference",
+        "venue_advantage",
+        "experience_difference"
+    ],
+    "accuracy": 0.4836,
+    "precision": 0.438,
+    "recall": 0.4775,
+    "f1_score": 0.4569,
+    "roc_auc": 0.457,
+    "confusion_matrix": [
+        [
+            65,
+            68
+        ],
+        [
+            58,
+            53
+        ]
+    ],
+    "generated_at": "2026-08-13T16:02:08.082707"
+}
