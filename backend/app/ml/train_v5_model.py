@@ -16,7 +16,7 @@ from sklearn.metrics import (
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from app.ml.v4_config import (
+from app.ml.v5_config import (
     FEATURE_COLUMNS,
     TARGET_COLUMN,
     TRAINING_DATA_PATH,
@@ -36,9 +36,8 @@ from app.ml.v4_config import (
 def load_dataset():
 
     if not TRAINING_DATA_PATH.exists():
-
         raise FileNotFoundError(
-            f"V4 training dataset not found: "
+            f"V5 training dataset not found: "
             f"{TRAINING_DATA_PATH}"
         )
 
@@ -48,8 +47,8 @@ def load_dataset():
 
     required_columns = (
         FEATURE_COLUMNS
-        + [TARGET_COLUMN]
         + [
+            TARGET_COLUMN,
             "match_date",
             "match_id",
             "team1",
@@ -64,26 +63,25 @@ def load_dataset():
     ]
 
     if missing:
-
         raise ValueError(
             "Missing columns: "
             + ", ".join(missing)
         )
 
-    dataframe["match_date"] = (
-        pd.to_datetime(
-            dataframe["match_date"],
-            errors="coerce",
-        )
+    dataframe["match_date"] = pd.to_datetime(
+        dataframe["match_date"],
+        errors="coerce",
     )
 
     dataframe = dataframe.dropna(
         subset=FEATURE_COLUMNS
-        + [TARGET_COLUMN, "match_date"]
+        + [
+            TARGET_COLUMN,
+            "match_date",
+        ]
     )
 
     if len(dataframe) < MINIMUM_TRAINING_ROWS:
-
         raise ValueError(
             f"At least "
             f"{MINIMUM_TRAINING_ROWS} "
@@ -91,10 +89,9 @@ def load_dataset():
         )
 
     if dataframe[TARGET_COLUMN].nunique() < 2:
-
         raise ValueError(
             "Training data must contain "
-            "both target classes."
+            "both target classes: 0 and 1."
         )
 
     # Chronological ordering
@@ -111,12 +108,16 @@ def load_dataset():
 
 
 # ============================================================
-# Train V4 Model
+# Train V5 Model
 # ============================================================
 
 def train_model():
 
     dataframe = load_dataset()
+
+    # --------------------------------------------------------
+    # Chronological 80/20 split
+    # --------------------------------------------------------
 
     split_index = int(
         len(dataframe)
@@ -148,8 +149,12 @@ def train_model():
     ]
 
     print(
-        "Training Random Forest V4..."
+        "Training Random Forest V5..."
     )
+
+    # --------------------------------------------------------
+    # Model
+    # --------------------------------------------------------
 
     model = Pipeline(
         [
@@ -174,9 +179,9 @@ def train_model():
         y_train,
     )
 
-    # ========================================================
+    # --------------------------------------------------------
     # Predictions
-    # ========================================================
+    # --------------------------------------------------------
 
     predictions = model.predict(
         X_test
@@ -188,9 +193,9 @@ def train_model():
         )[:, 1]
     )
 
-    # ========================================================
+    # --------------------------------------------------------
     # Metrics
-    # ========================================================
+    # --------------------------------------------------------
 
     accuracy = accuracy_score(
         y_test,
@@ -225,9 +230,9 @@ def train_model():
         predictions,
     )
 
-    # ========================================================
-    # Save Model
-    # ========================================================
+    # --------------------------------------------------------
+    # Save model
+    # --------------------------------------------------------
 
     MODEL_PATH.parent.mkdir(
         parents=True,
@@ -239,14 +244,12 @@ def train_model():
         MODEL_PATH,
     )
 
-    # ========================================================
-    # Metrics JSON
-    # ========================================================
+    # --------------------------------------------------------
+    # Save metrics
+    # --------------------------------------------------------
 
     metrics = {
-
-        "model":
-            "RandomForestClassifier-V4",
+        "model": "RandomForestClassifier-V5",
 
         "dataset_rows":
             len(dataframe),
@@ -292,19 +295,34 @@ def train_model():
             FEATURE_COLUMNS,
 
         "accuracy":
-            round(accuracy, 4),
+            round(
+                accuracy,
+                4,
+            ),
 
         "precision":
-            round(precision, 4),
+            round(
+                precision,
+                4,
+            ),
 
         "recall":
-            round(recall, 4),
+            round(
+                recall,
+                4,
+            ),
 
         "f1_score":
-            round(f1, 4),
+            round(
+                f1,
+                4,
+            ),
 
         "roc_auc":
-            round(roc_auc, 4),
+            round(
+                roc_auc,
+                4,
+            ),
 
         "confusion_matrix":
             matrix.tolist(),
@@ -338,7 +356,7 @@ def train_model():
 if __name__ == "__main__":
 
     print(
-        "Starting CricketGPT V4 ML training..."
+        "Starting CricketGPT V5 ML training..."
     )
 
     model, metrics = train_model()
@@ -397,7 +415,7 @@ if __name__ == "__main__":
 
     print()
     print(
-        "V4 Model Performance:"
+        "V5 Model Performance:"
     )
 
     print(

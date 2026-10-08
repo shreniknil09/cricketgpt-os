@@ -1,0 +1,36 @@
+{
+    "model": "RandomForestClassifier-V5",
+    "dataset_rows": 1218,
+    "training_rows": 974,
+    "test_rows": 244,
+    "training_start": "2008-04-18",
+    "training_end": "2023-04-30",
+    "testing_start": "2023-05-01",
+    "testing_end": "2026-05-31",
+    "feature_count": 7,
+    "features": [
+        "elo_difference",
+        "win_rate_difference",
+        "experience_difference",
+        "venue_advantage",
+        "head_to_head_difference",
+        "form_10_difference",
+        "form_5_difference"
+    ],
+    "accuracy": 0.4385,
+    "precision": 0.3839,
+    "recall": 0.3874,
+    "f1_score": 0.3857,
+    "roc_auc": 0.4492,
+    "confusion_matrix": [
+        [
+            64,
+            69
+        ],
+        [
+            68,
+            43
+        ]
+    ],
+    "generated_at": "2026-08-14T12:13:31.194642"
+}

@@ -1,0 +1,78 @@
+{
+    "dataset_rows": 1218,
+    "training_rows": 974,
+    "test_rows": 244,
+    "training_start": "2008-04-18",
+    "training_end": "2023-04-30",
+    "testing_start": "2023-05-01",
+    "testing_end": "2026-05-31",
+    "feature_count": 12,
+    "features": [
+        "elo_difference",
+        "form_5_difference",
+        "form_10_difference",
+        "win_rate_difference",
+        "run_rate_difference",
+        "boundary_rate_difference",
+        "bowling_run_rate_difference",
+        "wickets_difference",
+        "wickets_per_ball_difference",
+        "head_to_head_difference",
+        "venue_advantage",
+        "experience_difference"
+    ],
+    "models": {
+        "LogisticRegression": {
+            "accuracy": 0.4836,
+            "precision": 0.4409,
+            "recall": 0.5045,
+            "f1_score": 0.4706,
+            "roc_auc": 0.5059,
+            "confusion_matrix": [
+                [
+                    62,
+                    71
+                ],
+                [
+                    55,
+                    56
+                ]
+            ]
+        },
+        "RandomForestClassifier": {
+            "accuracy": 0.4508,
+            "precision": 0.4,
+            "recall": 0.4144,
+            "f1_score": 0.4071,
+            "roc_auc": 0.4605,
+            "confusion_matrix": [
+                [
+                    64,
+                    69
+                ],
+                [
+                    65,
+                    46
+                ]
+            ]
+        },
+        "GradientBoostingClassifier": {
+            "accuracy": 0.459,
+            "precision": 0.4186,
+            "recall": 0.4865,
+            "f1_score": 0.45,
+            "roc_auc": 0.4607,
+            "confusion_matrix": [
+                [
+                    58,
+                    75
+                ],
+                [
+                    57,
+                    54
+                ]
+            ]
+        }
+    },
+    "best_model": "LogisticRegression"
+}
