@@ -310,6 +310,49 @@ def extract_all_match_features(
             )
 
             # ------------------------------------------------
+            # Playing XI
+            # ------------------------------------------------
+
+            raw_players = info.get(
+                "players",
+                {}
+            )
+
+            # Historical Cricsheet files can contain minor
+            # team-name formatting differences, such as a
+            # missing space. Normalize keys for reliable XI
+            # lookup downstream.
+            players = {}
+
+            def normalize_team_name(name):
+                return "".join(
+                    str(name).lower().split()
+                )
+
+            for team in teams:
+                if team in raw_players:
+                    players[team] = raw_players[team]
+                    continue
+
+                normalized_team = normalize_team_name(team)
+
+                matched_key = next(
+                    (
+                        key
+                        for key in raw_players
+                        if normalize_team_name(key)
+                        == normalized_team
+                    ),
+                    None,
+                )
+
+                players[team] = (
+                    raw_players[matched_key]
+                    if matched_key
+                    else []
+                )
+
+            # ------------------------------------------------
             # Match date
             # ------------------------------------------------
 
@@ -387,6 +430,9 @@ def extract_all_match_features(
 
                     "toss_decision":
                         toss_decision,
+
+                    "players":
+                        players,
                 }
             )
 
