@@ -191,7 +191,6 @@ class TeamState:
 def calculate_player_match_stats(
     innings,
 ):
-
     batting = defaultdict(
         lambda: {
             "runs": 0,
@@ -229,157 +228,84 @@ def calculate_player_match_stats(
         )
     )
 
-    for over in innings.get(
-        "overs",
-        [],
-    ):
+    # Wickets that are not credited to the bowler under cricket
+    # scorekeeping rules.
+    non_bowler_wickets = {
+        "run out",
+        "retired hurt",
+        "retired out",
+        "obstructing the field",
+        "hit the ball twice",
+        "timed out",
+    }
 
-        over_number = over.get(
-            "over",
-            0,
-        )
+    for over in innings.get("overs", []):
+        over_number = over.get("over", 0)
+        phase = phase_from_over(over_number)
 
-        phase = phase_from_over(
-            over_number
-        )
+        for delivery in over.get("deliveries", []):
+            batter = delivery.get("batter")
+            bowler = delivery.get("bowler")
+            batter_runs = delivery.get("batter_runs", 0)
+            total_runs = delivery.get("total_runs", 0)
+            extras = delivery.get("extras", {}) or {}
+            wickets = delivery.get("wickets", []) or []
 
-        for delivery in over.get(
-            "deliveries",
-            [],
-        ):
+            # Cricsheet uses an extras dictionary. Wides do not count
+            # as balls faced; no-balls generally do count as balls faced.
+            is_wide = extras.get("wides", 0) > 0
+            is_no_ball = extras.get("noballs", 0) > 0
 
-            batter = delivery.get(
-                "batter"
+            # Byes, leg-byes, and penalty runs are not charged to the
+            # bowler. Wides and no-ball extras remain charged to them.
+            bowler_runs = total_runs - (
+                extras.get("byes", 0)
+                + extras.get("legbyes", 0)
+                + extras.get("penalty", 0)
             )
 
-            bowler = delivery.get(
-                "bowler"
+            bowler_wickets = sum(
+                1
+                for wicket in wickets
+                if str(wicket.get("kind", "")).lower().replace("_", " ")
+                not in non_bowler_wickets
             )
 
-            batter_runs = delivery.get(
-                "batter_runs",
-                0,
-            )
-
-            total_runs = delivery.get(
-                "total_runs",
-                0,
-            )
-
-            wickets = delivery.get(
-                "wickets",
-                [],
-            )
-
-            # =================================================
-            # Batting
-            # =================================================
-
+            # Batting statistics
             if batter:
+                batting[batter]["runs"] += batter_runs
+                if not is_wide:
+                    batting[batter]["balls"] += 1
 
-                batting[
-                    batter
-                ]["runs"] += (
-                    batter_runs
-                )
+                if batter_runs in (4, 6):
+                    batting[batter]["boundaries"] += 1
 
-                batting[
-                    batter
-                ]["balls"] += 1
+                batting_phase[batter][phase]["runs"] += batter_runs
+                if not is_wide:
+                    batting_phase[batter][phase]["balls"] += 1
 
-                if batter_runs in (
-                    4,
-                    6,
-                ):
+                if batter_runs in (4, 6):
+                    batting_phase[batter][phase]["boundaries"] += 1
 
-                    batting[
-                        batter
-                    ]["boundaries"] += 1
-
-                batting_phase[
-                    batter
-                ][
-                    phase
-                ]["runs"] += (
-                    batter_runs
-                )
-
-                batting_phase[
-                    batter
-                ][
-                    phase
-                ]["balls"] += 1
-
-                if batter_runs in (
-                    4,
-                    6,
-                ):
-
-                    batting_phase[
-                        batter
-                    ][
-                        phase
-                    ]["boundaries"] += 1
-
-            # =================================================
-            # Bowling
-            # =================================================
-
+            # Bowling statistics
             if bowler:
+                bowling[bowler]["runs"] += bowler_runs
+                if not is_wide and not is_no_ball:
+                    bowling[bowler]["balls"] += 1
 
-                bowling[
-                    bowler
-                ]["runs"] += (
-                    total_runs
-                )
+                bowling_phase[bowler][phase]["runs"] += bowler_runs
+                if not is_wide and not is_no_ball:
+                    bowling_phase[bowler][phase]["balls"] += 1
 
-                bowling[
-                    bowler
-                ]["balls"] += 1
+                bowling[bowler]["wickets"] += bowler_wickets
+                bowling_phase[bowler][phase]["wickets"] += bowler_wickets
 
-                bowling_phase[
-                    bowler
-                ][
-                    phase
-                ]["runs"] += (
-                    total_runs
-                )
-
-                bowling_phase[
-                    bowler
-                ][
-                    phase
-                ]["balls"] += 1
-
-                bowling[
-                    bowler
-                ]["wickets"] += len(
-                    wickets
-                )
-
-                bowling_phase[
-                    bowler
-                ][
-                    phase
-                ]["wickets"] += len(
-                    wickets
-                )
-
-            # =================================================
-            # Dismissals
-            # =================================================
-
+            # The batter dismissed is counted regardless of whether
+            # the dismissal is credited to the bowler.
             for wicket in wickets:
-
-                player_out = wicket.get(
-                    "player_out"
-                )
-
+                player_out = wicket.get("player_out")
                 if player_out:
-
-                    batting[
-                        player_out
-                    ]["dismissed"] += 1
+                    batting[player_out]["dismissed"] += 1
 
     return {
         "batting": batting,
@@ -387,7 +313,6 @@ def calculate_player_match_stats(
         "batting_phase": batting_phase,
         "bowling_phase": bowling_phase,
     }
-
 
 # ============================================================
 # Player Feature Snapshot
@@ -827,6 +752,12 @@ def process_match(
     # POST-MATCH UPDATE
     # ========================================================
 
+    # Count each listed playing-XI appearance once per match. Do this
+    # after the pre-match snapshot so the current match cannot leak into
+    # its own features.
+    for player in set(team1_players + team2_players):
+        player_states[player].matches += 1
+
     team1_state.matches += 1
 
     team2_state.matches += 1
@@ -889,8 +820,6 @@ def process_match(
             state = player_states[
                 player
             ]
-
-            state.matches += 1
 
             state.runs.append(
                 values["runs"]
